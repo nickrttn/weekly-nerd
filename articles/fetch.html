@@ -288,7 +288,7 @@ function request(url, options, callback) {
 
       // self points to a window or worker scope
       if (self && self.fetch) {
-        return fetch(url, options)
+        return fetch(url, opts)
           .then(function(response) {
             return response[type]();
           })
