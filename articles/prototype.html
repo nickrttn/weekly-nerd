@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Spectral:200,200i,300,300i" rel="stylesheet">
+  <title>Prototyping for UX</title>
+  <style>
+    html {
+      box-sizing: border-box;
+      font-size: calc(100% + .25vmin);
+    }
+
+    *, *:before, *:after {
+      box-sizing: inherit;
+    }
+
+    body {
+      font-family: Spectral, Georgia, serif;
+      font-weight: 300;
+      font-variant: common-ligatures;
+    }
+
+    h1, h2 {
+      font-weight: 200;
+    }
+
+    h1 {
+      font-size: 2.44125em;
+      margin-top: 2em;
+    }
+
+    h2 {
+      font-size: 1.563em;
+    }
+
+    p {
+      margin: 1.5em 0;
+      max-width: 72ch;
+      max-width: 35em;
+    }
+
+    .lead {
+      font-size: 1.25em;
+    }
+
+    article, nav {
+      max-width: 40em;
+      margin: 1.5em auto;
+      padding: 0 2vw;
+    }
+
+    nav {
+      margin: 3em auto;
+    }
+
+    a {
+      color: black;
+      text-decoration-skip: ink;
+      text-decoration-style: dotted;
+      transition: all 120ms linear;
+    }
+
+    a:hover,
+    a:focus  {
+      color: #F00000;
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Browser prototyping for UX</h1>
+      <p class="lead">I'm a firm believer in the value of quick iteration. Doing so enables you to find problems with your designs often and early. One of the best ways to iterate faster is prototyping in the browser, where you jump straight from rough sketches or even just a concept into the browser.</p>
+    </header>
+    <main>
+      <h2>Wireframes are the devil</h2>
+      <p>To understand why I feel like this, you need to know where we came from: wireframes. They're boring, annotated functional representations of a concept on paper (or in a PDF, if you're lucky), that do not succeed at getting the message across, simply because you cannot interact with them. They are static assets which just don't cut it in a world of interactive devices. Because of that, the user experience of wireframes is actually quite horrible, ironically. They're often heavy, technical documents.</p>
+      <p>The purpose of wireframes is to show the structure and behavior of the concept. However, because you can never express these things in a static assets, they are very open to interpretation. At the same time they're the sort of thing you'd throw at your developer and tell him to figure it out. It's not a tool that encourages conversation any other than a hand-off.</p>
+      <p>In addition to the above, wireframes are a lot of work, that might be for nothing if assumptions the UX designer made in them turn out to be false later. It's time better spent iterating on the design by multiple people.</p>
+
+      <h2>Prototyping is king</h2>
+      <p>So there are a couple of reasons I firmly believe in the worth of prototyping in any digital project. Prototypes can be built either in any prototyping tool or the browser (and necessary paraphernalia). I prefer the browser, because that's just my thing. Prototyping allows teams to better communicate design, because they're interactive, they can be tested in multiple devices, at whichever size you like. Stakeholders, users and collegeaus can click around and <em>feel</em> how it works, instead of having to use their imagination to fill in the gaps.</p>
+      <p>Prototypes are also far more accessible compared to wireframes. They're a great way to test flow. Everyone understands what a prototype is, and that it isn't the finalized product as long as you take a little time to explain. It is a premature version of (a part of) the product which is being shaped by the feedback loop so easily constructed using it.</p>
+      <p>Prototypes do not require a whole lot of documentation to get the point across. They just work, right there, under someone's fingers. As such, they are also perfect for easily user-testing.</p>
+      <p>Because prototypes require far less documentation, they also save valuable hours. By using the feedback loop and collective knowledge while prototyping, you can arrive at a better solution in less time, with more confidence it actually is the right solution.</p>
+      <p>Do keep in mind that prototyping should always be a collabarative activity, as to integrate your team better, and be able to align on design in an interactive way.</p>
+      <p>In short, I believe prototyping can be a great solution for the pitfalls and individuality of wireframes. They should have a part in every modern agile design process.</p>
+    </main>
+  </article>
+  <nav><a href="/">Back</a></nav>
+</body>
+</html>

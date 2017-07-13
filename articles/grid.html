@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>The Van der Graaf canon meets display: grid;</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Spectral:200,200i,300,300i" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/themes/prism-coy.min.css" integrity="sha256-2qjcLBfulM8qN7+0UWD4HH5LIvDmR51uUBmaPKLZT04=" crossorigin="anonymous" />
+  <style>
+  html {
+    box-sizing: border-box;
+  }
+
+  *, *:before, *:after {
+    box-sizing: inherit;
+  }
+
+  body {
+    font-family: 'Spectral', Georgia, serif;
+    font-variant: common-ligatures;
+    font-weight: 300;
+    line-height: 1.6;
+    margin: 0; padding: 0;
+  }
+
+  article {
+    display: grid;
+    grid-template-columns: repeat(9, calc(100vw / 9));
+  }
+
+  article > * {
+    grid-column: 2 / span 6;
+  }
+
+  article > header {
+    border-top: 1em solid #41E577;
+  }
+
+  @media screen and (min-width: 48em) and (orientation: landscape) {
+    article {
+      grid-template-columns: repeat(18, calc(100vw / 18));
+    }
+
+    article > * {
+      margin-top: calc(100vh / 9);
+      margin-bottom: calc((100vh / 9) * 2);
+      min-height: calc((100vh / 9) * 6);
+    }
+  }
+
+  @media screen and (min-width: 48em) and (orientation: landscape) {
+    article > header {
+      grid-column: 11 / span 6;
+    }
+
+    article > section:nth-of-type(odd) {
+      grid-column: 3 / span 6;
+    }
+
+    article > section:nth-of-type(even) {
+      grid-column: 11 / span 6;
+    }
+
+    article > section:first-of-type,
+    article > section:nth-of-type(2) {
+      grid-row: 2;
+    }
+
+    article > section:nth-of-type(3),
+    article > section:nth-of-type(4) {
+      grid-row: 3;
+    }
+
+    article > section:nth-of-type(5),
+    article > section:nth-of-type(6) {
+      grid-row: 4;
+    }
+  }
+
+  article > section :first-child {
+    margin-top: 0;
+  }
+
+  h1, h2, h3 {
+    line-height: 1.25;
+    margin: 1.5em 0 .5em;
+    font-weight: 200;
+  }
+
+  h1 {
+    font: 200 italic 2.441em/1.2 'Spectral', Georgia, serif;
+    margin: 1em 0;
+  }
+
+  @supports(text-decoration-skip: ink) {
+    h1 {
+      text-decoration: underline solid rebeccapurple;
+      text-decoration-skip: ink;
+    }
+  }
+
+  h1 abbr {
+    text-decoration: none;
+  }
+
+  h2 {
+    font-size: 1.562em;
+  }
+
+  h3 {
+    font-size: 1.25em;
+  }
+
+  p {
+    max-width: 72ch;
+    max-width: 35em;
+    margin: 1.5em 0;
+  }
+
+  pre {
+    max-width: 100%;
+    font-size: 0.8em;
+  }
+
+  p code {
+    font-size: 0.85em;
+    font-family: Menlo, Consolas, Monaco, monospace;
+  }
+
+  a {
+    color: black;
+    text-decoration-skip: ink;
+    text-decoration-style: dotted;
+    transition: all 120ms linear;
+  }
+
+  a:hover,
+  a:focus  {
+    color: #F00000;
+  }
+
+  img {
+    max-width: 80%;
+    height: auto;
+  }
+
+  figure {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    margin: 1.5em 0;
+  }
+
+  figure > img {
+    display: block;
+    border: 2px solid #ccc;
+  }
+
+  figcaption {
+    font-style: italic;
+    max-width: 80%;
+    margin: 1em 0 1.5em;
+  }
+  </style>
+</head>
+<body>
+    <article>
+      <header>
+        <h1>Recreating Van de Graaf's canon for the web with <abbr title="Cascading Style Sheets">CSS</abbr> Grid</h1>
+      </header>
+
+      <section>
+        <h2>Introduction</h2>
+        <p>I first stumbled on the theories of page layout in an article called <a href="http://retinart.net/graphic-design/secret-law-of-page-harmony/">“The Secret Law of Page Harmony”</a>. Now, I'm not really a believer in the <em>golden ratio theory</em> this “secret law” is based on. Some believers think things designed using the golden ratio are inherently, subconsciously beautiful to the human eye. Ugly is ugly. But I will concede the golden ratio is another tool for your arsenal, and I do use it sometimes.</p>
+
+        <figure>
+          <img src="../images/tsichold-optimized.png" alt="The page layout structure of the Van de Graaf-canon visualised.">
+          <figcaption>Figure 1. This is how the Van de Graaf-canon is used in print. The page's most important content is placed in the blue-stroked boxes, the margins can be used for headings, sidenotes or other <em>margin</em>ally relevant content (pun intended).</figcaption>
+        </figure>
+      </section>
+
+      <section>
+        <h3>Difficulties</h3>
+        <p>After remembering the article, I wanted to see if I could implement the ancient (medieval) page layout theories using the (completely new) <a href="http://www.w3.org/TR/2015/WD-css-grid-1-20150806/">CSS Grid</a>. There are several difficulties to overcome here. Layouts very much like this one have been in use by monks since medieval times. First, I think that when discussing page layouts the most important difference between physical media and the web is that the web is vertically endless. It's a page that doesn't ever stop. We are going to have to deal with that somehow. Second, we are designing for unknown users with unknown devices in unknown contexts of use. This has to look great in any circumstance.</p>
+
+        <h2>Building the grid</h2>
+        <p>I started out building a minimal, mobile-first grid. The original canon is based on the spread of a book. For application to digital design we have to account for the fact that devices can either have a portrait or landscape orientation. In Van de Graaf's page layout both pages of a spread have a 9&times;9 grid. Mobile devices are often held in portrait orientation, which closely resembles a single page. The right-handed page of the page layout will be our starting point. We'll account for landscape orientation later.</p>
+      </section>
+
+      <section>
+        <p>The grid will have 9 columns of equal-sized fractions of the width of the page. For the portrait layout, I'll only use the horizontal characteristics of the Van de Graaf canon.</p>
+
+        <pre><code class="language-css">
+  article {
+    display: grid;
+    grid-template-columns: repeat(9, calc(100vw / 9));
+  }
+
+  article > * {
+    grid-column: 2 / span 6;
+  }
+        </code></pre>
+
+        <p>In the code snippet above, I assign every direct child of the <code>article</code> to start at the second column in the grid, and tell it to span 6 columns (out of 9), just like in the Van de Graaf canon. And as easy as that, we've got a grid that deals with the horizontal spacing of the article.</p>
+        <p>Now that this is in place, we've got the ‘single-page’ layout down. This works fine on rotated (landscape) phones or other devices. I want the spread to appear on larger screens.</p>
+      </section>
+
+      <section>
+        <p>On screens with a landscape orientation that are bigger than <code>48em</code>, I want to respect the vertical rhythm of the Van de Graaf canon.</p>
+
+        <pre><code class="language-css">
+@media screen and (min-width: 48em) and (orientation: landscape) {
+  article {
+    grid-template-columns: repeat(18, calc(100vw / 18));
+  }
+
+  article > * {
+    margin-top: calc(100vh / 9);
+    margin-bottom: calc((100vh / 9) * 2);
+    min-height: calc((100vh / 9) * 6);
+  }
+}
+        </code></pre>
+
+        <p>I solved this by cheating with simple margins instead of CSS Grid rows to reduce complexity and not to cap the vertical height of my content if it grows beyond the predefined CSS Grid rows.</p>
+      </section>
+
+      <section>
+        <p>Having the vertical rhythm down, I have to tell each and every element in the article where it belongs.</p>
+
+        <pre><code class="language-css">
+  @media screen and (min-width: 48em) and (orientation: landscape) {
+    article > header {
+      grid-column: 11 / span 6;
+    }
+
+    article > section:nth-of-type(odd) {
+      grid-column: 3 / span 6;
+    }
+
+    article > section:nth-of-type(even) {
+      grid-column: 11 / span 6;
+    }
+
+    article > section:first-of-type,
+    article > section:nth-of-type(2) {
+      grid-row: 2;
+    }
+
+    article > section:nth-of-type(3),
+    article > section:nth-of-type(4) {
+      grid-row: 3;
+    }
+
+    article > section:nth-of-type(5),
+    article > section:nth-of-type(6) {
+      grid-row: 4;
+    }
+  }
+        </code></pre>
+      </section>
+
+      <section>
+        <h2>Conclusion</h2>
+        <p>The CSS Grid specification isn't quite made for text layout like this. You'd like an article to be able to flow through pre-defined areas. Unfortunately, you have to cut it up into areas by hand. In doing so, you will notice your areas look weird on some aspect ratios, due to overflowing. I guess what I want is still out of reach, for now. Unless I write some very hacky JavaScript. <a href="https://drafts.csswg.org/css-regions-1/">CSS Regions</a> might be the answer to my troubles, but it will not be implemented for some time yet.</p>
+        <p>Footnote: this article was laid out with the described technique.</p>
+      </section>
+    </article>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/prism.min.js" integrity="sha256-Zb9yKJ/cfs+jG/zIOFL0QEuXr2CDKF7FR5YBJY3No+c=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/components/prism-css.min.js" integrity="sha256-9IbC+5POyRUrKjUK74vvfhDo2KEjASNTA6OAt1gwKvs=" crossorigin="anonymous"></script>
+</body>
+</html>

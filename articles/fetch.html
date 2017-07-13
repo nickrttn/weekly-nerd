@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Spectral:200,200i,300,300i" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/themes/prism-coy.min.css" integrity="sha256-2qjcLBfulM8qN7+0UWD4HH5LIvDmR51uUBmaPKLZT04=" crossorigin="anonymous" />
+
+  <title>Requesting data</title>
+  <style>
+    html {
+      box-sizing: border-box;
+      font-size: calc(100% + .25vmin);
+    }
+
+    *, *:before, *:after {
+      box-sizing: inherit;
+    }
+
+    body {
+      font-family: Spectral, Georgia, serif;
+      font-weight: 300;
+      font-variant: common-ligatures;
+    }
+
+    h1, h2 {
+      font-weight: 200;
+    }
+
+    h1 {
+      font-size: 2.44125em;
+      margin-top: 2em;
+    }
+
+    h2 {
+      font-size: 1.563em;
+    }
+
+    p {
+      margin: 1.5em 0;
+      max-width: 72ch;
+      max-width: 35em;
+    }
+
+    .lead {
+      font-size: 1.25em;
+    }
+
+    pre {
+      max-width: 100%;
+      font-size: 0.8em;
+    }
+
+    p code {
+      font-family: Menlo, Consolas, Monaco, monospace;
+      font-size: .85em;
+    }
+
+    h1 code {
+      font-size: .85em;
+      font-weight: 400;
+    }
+
+    article, nav {
+      max-width: 40em;
+      margin: 1.5em auto;
+      padding: 0 2vw;
+    }
+
+    nav {
+      margin: 3em auto;
+    }
+
+    a {
+      color: black;
+      text-decoration-skip: ink;
+      text-decoration-style: dotted;
+      transition: all 120ms linear;
+    }
+
+    a:hover,
+    a:focus  {
+      color: #F00000;
+    }
+
+    button {
+      font-family: inherit;
+      font-size: inherit;
+      padding: .5em 1em;
+      border: 2px solid white;
+      background: #222;
+      color: white;
+      transition: all 120ms linear;
+    }
+
+    button:hover,
+    button:focus {
+      background: white;
+      color: black;
+      border: 2px solid black;
+    }
+
+    .report {
+      display: block;
+      margin: 1.5em 0;
+    }
+
+    .temperature {
+      display: block;
+      font-size: 4em;
+      line-height: 1;
+    }
+
+    .desc {
+      font-size: 2em;
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Requesting data</h1>
+      <p class="lead">Fetch is a popular new Browser API to request data and files. However, older browsers can't deal with <code>fetch()</code>. How do you use it while maintaining compatibility with older browsers?</p>
+    </header>
+    <main>
+      <h2>Progressive enhancement</h2>
+      <p>Instead of writing a polyfill for everything fetch entails, including Promises, I'd like to build on what's already there in the browser while providing a unified API you can use and expect the same results from. That means <code>XMLHttpRequest()</code> and <code>XDomainRequest()</code>. Implementing <code>then()</code> and <code>catch()</code> is probably beyond the scope of the article, but we'll see where we end up. I'm aiming for IE8+ support here.</p>
+      <p>The first thing we need to know is what we would expect a request to return as a response. Right? I would expect either a response with the thing I requested, or an error telling me what went wrong.</p>
+      <p>I think request might be a good name for the API we'll be building, so let's go ahead and create some boilerplate. We need this thing to be in the global scope, so I put it in a <code>script</code> tag, nice and simple.</p>
+
+      <pre><code class="language-js">
+function request() {
+
+};
+      </code></pre>
+
+      <p>That is very barebones. What else could we need? Some parameters maybe? Both <code>fetch()</code> and <code>XMLHttpRequest()</code> need a URL to be able to do anything, so that seems like a good first candidate. Additionally, both can have options. Now, as <code>fetch()</code> and <code>XMLHttpRequest()</code> handle returning their response in a different way, we need to be able to get those results to where we need them. A single callback is an easy way to do so. Let's add that to the parameters as well.</p>
+
+      <p>In addition to defining the parameters, we need to define what they are able to contain. The URL obviously has to be a valid URL. Luckily, both methods will warn you when that's not the case, so we can forget about that. We do need to set some defaults for the options object and make sure they are actually used.</p>
+
+      <p>Now, because <code>XMLHttpRequest()</code> can't directly request images (but can insert source URLs which might be the better way to go), we will assume that we are going to either request text or JSON. Of course your text could be a piece of HTML which you would insert with whatever method you'd like.</p>
+
+      <pre><code class="language-js">
+function request(url, options, callback) {
+  var type = options && options.type ? options.type : 'text';
+
+  // XMLHttpRequest only needs the method, but let's deal with that later.
+  var opts = Object({
+    method: 'GET',
+    mode: 'cors',
+  });
+
+  for (var key in options) {
+    // Don't put the type key in the options for requests
+    if (key === 'type') {
+      continue;
+    }
+
+    opts[key] = options[key];
+  }
+};
+      </code></pre>
+
+      <p>For me, writing this with <code>fetch()</code> first is the easy way to go. We should first see if we even have fetch available using feature detection. If fetch is available, we can safely use it to do our request and call the callback when it finishes. Do note the return which stops function execution <em>right there</em>.</p>
+
+      <pre><code class="language-js">
+function request(url, options, callback) {
+  var type = options && options.type ? options.type : 'text';
+  var opts = Object({
+    method: 'GET',
+    mode: 'cors',
+  });
+
+  for (var key in options) {
+    if (key === 'type') {
+      continue;
+    }
+
+    opts[key] = options[key];
+  }
+
+  // self refers to the Window or Worker object
+  if (fetch in self) {
+    // now fetch! 🎉
+    return fetch(url, options)
+      .then(function(response) {
+        return response[type]();
+      })
+      .then(function(content) {
+        return callback(null, content);
+      })
+      .catch(function(err) {
+        console.error(err);
+        callback(err);
+      })
+  }
+};
+      </code></pre>
+
+      <p>Now only if we do not have <code>fetch()</code> available, we ever get below the if-statement. We do a <code>XMLHttpRequest()</code> there, so everyone can enjoy their new content. In the next code snippet, I omitted some parts for brevity.</p>
+
+      <p>In IE8 and IE9, you use <code>XDomainRequest()</code> for CORS requests instead of <code>XMLHttpRequest()</code>, so we need to check if it exists and use it if it does.</p>
+
+      <pre><code class="language-js">
+function request(url, options, callback) {
+  &hellip;
+
+  // self refers to the Window or Worker object
+  if (fetch in self) {
+    &hellip;
+  }
+
+  var req = self.XDomainRequest ? new self.XDomainRequest() : new XMLHttpRequest();
+
+  req.onerror = function(event) {
+    console.error(event);
+  }
+
+  req.onload = function() {
+    if (req.status === 200) {
+      var response = type === 'json' ? JSON.parse(req.responseText) : req.responseText;
+      return callback(null, response);
+    }
+
+    callback({
+      "status": req.status,
+      responseText: req.responseText
+    });
+  }
+
+  req.open(opts.method, url);
+
+  setTimeout(function() {
+    req.send();
+  }, 0);
+};
+      </code></pre>
+
+      <p>That <code>setTimeout()</code> is horrible, but needed in some scenario's where older browsers require <code>req.open()</code> to be executed before <code>req.send()</code> can be. This is it. The whole thing. There you are. Now click the button and see it work.</p>
+
+      <div class="weather">
+        <button>Get me the weather</button>
+        <div class="report"></div>
+      </div>
+    </main>
+  </article>
+  <nav><a href="/">Back</a></nav>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/prism.min.js" integrity="sha256-Zb9yKJ/cfs+jG/zIOFL0QEuXr2CDKF7FR5YBJY3No+c=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/components/prism-javascript.min.js" integrity="sha256-c+rbyAMS5uc5kNg/9l6huKo8HTw7mgkWmFrcSbEX3TI=" crossorigin="anonymous"></script>
+  <script>
+    (function() {
+      document.querySelector('.weather button').addEventListener('click', onclick);
+
+      function onclick() {
+        var key = "1db4ff6d87f73fe6033fa27d178a05e3";
+        var cityId = "2759794";
+        var endpoint = "http://api.openweathermap.org/data/2.5/weather";
+        var url = endpoint + "?id=" + cityId + "&APPID=" + key + '&units=metric';
+
+        request(url, {type: 'json'}, onrequest);
+
+        function onrequest(err, json) {
+          var desc = json.weather[0].description;
+          var tempInC = json.main.temp;
+          var report = document.querySelector('.report');
+          var html = '<span class="temperature">' + tempInC + '°C</span><span class="desc">' + desc + '</span>';
+          report.innerHTML = html;
+        }
+      }
+    })();
+
+    function request(url, options, callback) {
+      var type = options && options.type ? options.type : 'text';
+
+      var opts = Object({
+        method: 'GET',
+        mode: 'cors',
+      });
+
+      for (var key in options) {
+        // Don't put the type key in the options for requests
+        if (key === 'type') {
+          continue;
+        }
+
+        opts[key] = options[key];
+      }
+
+      // self points to a window or worker scope
+      if (self && self.fetch) {
+        return fetch(url, options)
+          .then(function(response) {
+            return response[type]();
+          })
+          .then(function(content) {
+            return callback(null, content);
+          })
+          .catch(function(err) {
+            console.error(err);
+            callback(err);
+          })
+      }
+
+      var req = self.XDomainRequest ? new self.XDomainRequest() : new XMLHttpRequest();
+
+      req.onerror = function(event) {
+        console.error(event);
+      }
+
+      req.onload = function() {
+        if (req.status === 200) {
+          var response = type === 'json' ? JSON.parse(req.responseText) : req.responseText;
+          return callback(null, response);
+        }
+
+        callback({
+          "status": req.status,
+          responseText: req.responseText
+        });
+      }
+
+      req.open(opts.method, url);
+
+      setTimeout(function() {
+        req.send();
+      }, 0);
+    }
+</script>
+</body>
+</html>
