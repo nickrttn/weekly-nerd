@@ -132,7 +132,7 @@
     </header>
     <main>
       <h2>Progressive enhancement</h2>
-      <p>Instead of writing a polyfill for everything <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API"><code>fetch()</code></a> entails, including Promises, I'd like to build on what's already there in the browser while providing a unified <abbr title="Application Programming Interface">API</abbr> you can use and expect the same results from. That means <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest"><code>XMLHttpRequest()</code></a> and <code>XDomainRequest()</code>. Implementing <code>then()</code> and <code>catch()</code> is probably beyond the scope of the article, but we'll see where we end up. I'm aiming for <abbr title="Internet Explorer 8">IE8</abbr>+ support here.</p>
+      <p>Instead of writing a polyfill for everything <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API"><code>fetch()</code></a> entails, including Promises, I'd like to build on what's already there in the browser while providing a unified <abbr title="Application Programming Interface">API</abbr> you can use and expect the same results from. That means <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest"><code>XMLHttpRequest()</code></a> and <a href="https://developer.mozilla.org/en-US/docs/Web/API/XDomainRequest"><code>XDomainRequest()</code></a>. Implementing <code>then()</code> and <code>catch()</code> is probably beyond the scope of the article, but we'll see where we end up. I'm aiming for <abbr title="Internet Explorer 8">IE8</abbr>+ support here.</p>
       <p>The first thing we need to know is what we would expect a request to return as a response. Right? I would expect either a response with the thing I requested, or an error telling me what went wrong.</p>
       <p>I think request might be a good name for the API we'll be building, so let's go ahead and create some boilerplate. We need this functionality in the global scope, so I'm putting this in a <code>script</code> tag right in the HTML.</p>
 
@@ -211,7 +211,7 @@ function request(url, options, callback) {
 
       <p>Now only if we do not have <code>fetch()</code> available, we ever get below the if-statement. We do a <code>XMLHttpRequest()</code> there, so everyone can enjoy their new content. In the next code snippet, I omitted some parts for brevity.</p>
 
-      <p>In IE8 and IE9, you use <code>XDomainRequest()</code> for <abbr title="Cross-Origin Resource Sharing">CORS</abbr> requests instead of <code>XMLHttpRequest()</code>, so we need to check if it exists and use it if it does.</p>
+      <p>In <abbr title="Internet Explorer 8">IE8</abbr> and <abbr title="Internet Explorer 9">IE9</abbr>, you use <code>XDomainRequest()</code> for <abbr title="Cross-Origin Resource Sharing">CORS</abbr> requests instead of <code>XMLHttpRequest()</code>, so we need to check if it exists and use it if it does.</p>
 
       <pre><code class="language-js">
 function request(url, options, callback) {
