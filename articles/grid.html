@@ -260,13 +260,13 @@
     }
   }
         </code></pre>
-        <p>That's it, a finished implementation of the Van der Graaf-canon for CSS Grid.</p>
       </section>
 
       <section>
+        <p>That's it, a finished implementation of the Van der Graaf-canon for CSS Grid. You can clearly see how this wouldn't scale to any sort of production environment. The vertical page layout of the Van der Graaf-canon that works so well on tangible media, is also what makes it very hard and hacky to work with on digital media. In having to create predefined grid areas, I also had to cut up the article content by hand, picking arbitrary points to break into a next grid area. This causes the layout to look awkwardly empty on some breakpoints.</p>
 
         <h2>Conclusion</h2>
-        <p>The CSS Grid specification isn't quite made for text layout like this. You'd like an article to be able to flow through pre-defined areas. Unfortunately, you have to cut it up into areas by hand. In doing so, you will notice your areas look weird on some aspect ratios, due to overflowing. I guess what I want is still out of reach, for now. Unless I write some very hacky JavaScript. <a href="https://drafts.csswg.org/css-regions-1/">CSS Regions</a> might be the answer to my troubles, but it will not be implemented for some time yet.</p>
+        <p>The CSS Grid specification isn't quite made for editorial text layout like this, yet. You'd like an article to be able to flow through pre-defined grid areas. Unfortunately, now you have to cut it up into areas by hand.  In doing so, you will notice your areas look weird on some aspect ratios, due to overflowing. I guess what I wanted is still out of reach, for now. Unless I write some very horrible JavaScript, or do hours and hours of art direction on exactly fitting images and text length for sections of the page. <a href="https://drafts.csswg.org/css-regions-1/">CSS Regions</a> could be the answer to my troubles, but it will not be implemented for some time yet. As of yet, only Safari has <a href="http://caniuse.com/#search=css%20regi">full support</a>. <abbr title="Internet Explorer 11">IE11</abbr> and Edge support it partially, other browsers not at all, not even behind a flag.</p>
         <p>Footnote: this article was laid out with the described technique.</p>
       </section>
     </article>
