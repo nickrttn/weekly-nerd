@@ -173,7 +173,7 @@
 
       <section>
         <h2>Introduction</h2>
-        <p>I first stumbled on the theories of page layout in an article called <a href="http://retinart.net/graphic-design/secret-law-of-page-harmony/">“The Secret Law of Page Harmony”</a>. Now, I'm not really a believer in the <em>golden ratio theory</em> this “secret law” is based on. Some believers think things designed using the golden ratio are inherently, subconsciously beautiful to the human eye. Ugly is ugly. But I will concede the golden ratio is another tool for your arsenal, and I do use it sometimes.</p>
+        <p>I first stumbled on the theories of page layout a couply of years ago, in an article called <a href="http://retinart.net/graphic-design/secret-law-of-page-harmony/">“The Secret Law of Page Harmony”</a>. Now, I'm not really a believer in the <a href="http://www.creativebloq.com/design/designers-guide-golden-ratio-12121546"><em>golden ratio theory</em></a> this “secret law” is based on. Some believers think things designed using the golden ratio are inherently, subconsciously beautiful to the human eye. Ugly is ugly. But I will concede the golden ratio is another tool for your arsenal, and I do use it sometimes, often for expressive type scales.</p>
 
         <figure>
           <img src="../images/tsichold-optimized.png" alt="The page layout structure of the Van de Graaf-canon visualised.">
@@ -183,7 +183,7 @@
 
       <section>
         <h3>Difficulties</h3>
-        <p>After remembering the article, I wanted to see if I could implement the ancient (medieval) page layout theories using the (completely new) <a href="http://www.w3.org/TR/2015/WD-css-grid-1-20150806/">CSS Grid</a>. There are several difficulties to overcome here. Layouts very much like this one have been in use by monks since medieval times. First, I think that when discussing page layouts the most important difference between physical media and the web is that the web is vertically endless. It's a page that doesn't ever stop. We are going to have to deal with that somehow. Second, we are designing for unknown users with unknown devices in unknown contexts of use. This has to look great in any circumstance.</p>
+        <p>After remembering the article, I wanted to see if I could implement the medieval page layout theories using the brand new <a href="http://www.w3.org/TR/2015/WD-css-grid-1-20150806/">CSS Grid</a>. There are several difficulties to overcome here. Layouts very much like the Van der Graaf canon one have been in use by monks since medieval times. First, I think that when discussing page layouts the most important difference between physical media and the web is that the web is vertically endless. It's a page that doesn't ever stop. Pages in books have well defined bounds you can use to define a vertical rhythm. We are going to have to deal with that somehow. Second, we are designing for unknown users with unknown devices in unknown contexts of use. This has to look great in any circumstance.</p>
 
         <h2>Building the grid</h2>
         <p>I started out building a minimal, mobile-first grid. The original canon is based on the spread of a book. For application to digital design we have to account for the fact that devices can either have a portrait or landscape orientation. In Van de Graaf's page layout both pages of a spread have a 9&times;9 grid. Mobile devices are often held in portrait orientation, which closely resembles a single page. The right-handed page of the page layout will be our starting point. We'll account for landscape orientation later.</p>
@@ -224,7 +224,7 @@
 }
         </code></pre>
 
-        <p>I solved this by cheating with simple margins instead of CSS Grid rows to reduce complexity and not to cap the vertical height of my content if it grows beyond the predefined CSS Grid rows.</p>
+        <p>I solved this by cheating with simple margins instead of <a href="https://css-tricks.com/snippets/css/complete-guide-grid/">CSS Grid</a> rows to reduce complexity and not to cap the vertical height of my content to predefined CSS Grid rows.</p>
       </section>
 
       <section>
@@ -260,9 +260,11 @@
     }
   }
         </code></pre>
+        <p>That's it, a finished implementation of the Van der Graaf-canon for CSS Grid.</p>
       </section>
 
       <section>
+
         <h2>Conclusion</h2>
         <p>The CSS Grid specification isn't quite made for text layout like this. You'd like an article to be able to flow through pre-defined areas. Unfortunately, you have to cut it up into areas by hand. In doing so, you will notice your areas look weird on some aspect ratios, due to overflowing. I guess what I want is still out of reach, for now. Unless I write some very hacky JavaScript. <a href="https://drafts.csswg.org/css-regions-1/">CSS Regions</a> might be the answer to my troubles, but it will not be implemented for some time yet.</p>
         <p>Footnote: this article was laid out with the described technique.</p>
