@@ -46,6 +46,10 @@
       font-size: 1.25em;
     }
 
+    .notice {
+      font-style: italic;
+    }
+
     pre {
       max-width: 100%;
       font-size: 0.8em;
@@ -114,6 +118,10 @@
     .desc {
       font-size: 2em;
     }
+
+    .error {
+      color: #f00000;
+    }
   </style>
 </head>
 <body>
@@ -124,9 +132,9 @@
     </header>
     <main>
       <h2>Progressive enhancement</h2>
-      <p>Instead of writing a polyfill for everything fetch entails, including Promises, I'd like to build on what's already there in the browser while providing a unified API you can use and expect the same results from. That means <code>XMLHttpRequest()</code> and <code>XDomainRequest()</code>. Implementing <code>then()</code> and <code>catch()</code> is probably beyond the scope of the article, but we'll see where we end up. I'm aiming for IE8+ support here.</p>
+      <p>Instead of writing a polyfill for everything <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API"><code>fetch()</code></a> entails, including Promises, I'd like to build on what's already there in the browser while providing a unified API you can use and expect the same results from. That means <code>XMLHttpRequest()</code> and <code>XDomainRequest()</code>. Implementing <code>then()</code> and <code>catch()</code> is probably beyond the scope of the article, but we'll see where we end up. I'm aiming for IE8+ support here.</p>
       <p>The first thing we need to know is what we would expect a request to return as a response. Right? I would expect either a response with the thing I requested, or an error telling me what went wrong.</p>
-      <p>I think request might be a good name for the API we'll be building, so let's go ahead and create some boilerplate. We need this thing to be in the global scope, so I put it in a <code>script</code> tag, nice and simple.</p>
+      <p>I think request might be a good name for the API we'll be building, so let's go ahead and create some boilerplate. We need this functionality in the global scope, so I'm putting this in a <code>script</code> tag right in the HTML, nice and simple.</p>
 
       <pre><code class="language-js">
 function request() {
@@ -236,11 +244,11 @@ function request(url, options, callback) {
 };
       </code></pre>
 
-      <p>That <code>setTimeout()</code> is horrible, but needed in some scenario's where older browsers require <code>req.open()</code> to be executed before <code>req.send()</code> can be. This is it. The whole thing. There you are. Now click the button and see it work.</p>
+      <p>That <code>setTimeout()</code> is weird, but needed in some scenario's where browsers require <code>req.open()</code> to be executed before <code>req.send()</code> can be. This is it. The whole thing. There you are. Now click the button and see it work.</p>
+      <p class="notice">Unfortunately, the button is broken on HTTPS domains due to <code>fetch()</code>'s security features and would require a proxy server to work on a HTTPS domain. It should work fine on a regular HTTP domain.</p>
 
       <div class="weather">
         <button>Get me the weather</button>
-        <p>Unfortunately, this is broken due to HTTPS and HTTP mixed content and would require a proxy server to work on a HTTPS domain.</p>
         <div class="report"></div>
       </div>
     </main>
@@ -261,10 +269,18 @@ function request(url, options, callback) {
         request(url, {type: 'json'}, onrequest);
 
         function onrequest(err, json) {
+          var report = document.querySelector('.report');
+          console.log(err, json);
+
+          if (err) {
+            var html = '<span class="error">' + err.message + '<\/span>';
+            report.innerHTML = html;
+            return;
+          }
+
           var desc = json.weather[0].description;
           var tempInC = json.main.temp;
-          var report = document.querySelector('.report');
-          var html = '<span class="temperature">' + tempInC + '°C</span><span class="desc">' + desc + '</span>';
+          var html = '<span class="temperature">' + tempInC + '°C<\/span><span class="desc">' + desc + '<\/span>';
           report.innerHTML = html;
         }
       }
@@ -294,10 +310,13 @@ function request(url, options, callback) {
             return response[type]();
           })
           .then(function(content) {
+            if (content.cod !== 200) {
+              throw Error(content.message);
+            }
+
             return callback(null, content);
           })
           .catch(function(err) {
-            console.error(err);
             callback(err);
           })
       }
@@ -305,7 +324,7 @@ function request(url, options, callback) {
       var req = self.XDomainRequest ? new self.XDomainRequest() : new XMLHttpRequest();
 
       req.onerror = function(event) {
-        console.error(event);
+        callback(req);
       }
 
       req.onload = function() {
@@ -314,10 +333,7 @@ function request(url, options, callback) {
           return callback(null, response);
         }
 
-        callback({
-          "status": req.status,
-          responseText: req.responseText
-        });
+        callback(JSON.parse(req.responseText));
       }
 
       req.open(opts.method, url);
