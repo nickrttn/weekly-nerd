@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,192 +8,121 @@
   <title>The Van der Graaf canon meets display: grid;</title>
 
   <link href="https://fonts.googleapis.com/css?family=Spectral:200,200i,300,300i" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/themes/prism-coy.min.css" integrity="sha256-2qjcLBfulM8qN7+0UWD4HH5LIvDmR51uUBmaPKLZT04=" crossorigin="anonymous" />
-  <style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/themes/prism-coy.min.css" integrity="sha256-2qjcLBfulM8qN7+0UWD4HH5LIvDmR51uUBmaPKLZT04="
+    crossorigin="anonymous" />
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <article>
+    <header>
+      <h1>Recreating Van de Graaf's canon for the web with <abbr title="Cascading Style Sheets">CSS</abbr> Grid</h1>
+    </header>
+
+    <main>
+      <h2>Introduction</h2>
+      <p>I first stumbled on Van der Graaf's theory of page layout a couply of years ago, in an article called <a href="http://retinart.net/graphic-design/secret-law-of-page-harmony/">“The Secret Law of Page Harmony”</a>. Now, I'm not really a believer in the <a href="http://www.creativebloq.com/design/designers-guide-golden-ratio-12121546"><em>golden ratio theory</em></a> this ‘secret law’ is based on. Some believers think things designed using the golden ratio are inherently, subconsciously beautiful to the human eye. I do find the golden ratio a useful tool for your arsenal, and I do use it sometimes, often for expressive type scales.</p>
+
+      <h3>Typography on point</h3>
+
+      <p>When I'm working on (new) layout techniques, I like to get my typography on point first, because typography plays such a big role in how layout looks and feels. The Van der Graaf layout is meant to scale with the paper you use it on. In the browser, layouts are inherently scalable with the canvas, the viewport and beyond. As you might already know, typography can also scale with the viewport size, using <code>vw</code> and <code>vh</code> units.</p>
+      
+      <p>To complement the Van der Graaf-canon, I'll base my typographic scale on the golden ratio (sometimes called the golden section). Using <a href="http://www.modularscale.com/?1&em&1.618">Modular Scale</a>, I end up with the following typographic scale. I listed only the elements I'm sure I'll use here. I'll add elements to the stylesheet as I go.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>HTML element</th>
+            <th>Font size</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>h1</code></td>
+            <td>4.236em</td>
+          </tr>
+          <tr>
+            <td>h2</td>
+            <td>2.618em</td>
+          </tr>
+          <tr>
+            <td>h3</td>
+            <td>1.618em</td>
+          </tr>
+          <tr>
+            <td>h4, p</td>
+            <td>1em</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>I disregard <code>h5</code> and <code>h6</code> because I don't often use them. The <code>h4</code> and <code>p</code> elements use the same font size, but will be set apart by different styling. As a starting point, the elements will all have margins of 1.5 &times; and 0.75 &times; their sizes at the top and bottom respectively. This can be changed as necessary later.</p>
+
+      <pre><code class="language-css">
+h1, h2, h3, h4, p {
+  margin: 1.5em 0 0.75em;
+}
+
+h1 {
+  font-size: 4.236em;
+}
+
+h2 {
+  font-size: 2.618em;
+}
+
+h3 {
+  font-size: 1.618em
+}
+
+h4, p {
+  font-size: 1em;
+}
+      </code></pre>
+
+      <p>You'll have noticed that I haven't used any viewport-based units. Zell Liew <a href="https://zellwk.com/blog/viewport-based-typography/">wrote about</a> a technique that allows you to use a single CSS declaration to make the whole scale respond to the viewport size. It looks like this.</p>
+
+      <pre><code class="language-css">
+html {
+  font-size: calc(1em + 0.25 * (100vw - 45em) / 35);
+}
+      </code></pre>
+
+      <p>Please note that I'm skipping all of the cross-browser intricacies Zell does talk about in his blog post. I've already updated the declaration to my preferences, scaling the base font size from <code>1em</code> to <code>1.25em</code> between the viewport sizes of <code>45e </code> and <code>80em</code>.</p>
+
+      <p>Scaling the font size of the <code>html</code> element, effects all of the elements that inherit font size from it. All of the elements I'm currently using ( <code>h1</code>, <code>h2</code>, <code>h3</code>, <code>h4</code> and <code>p</code>) do inherit font size from their parent. I'm not setting other font sizes anywhere else in the document tree, allowing the elements to scale reliably and predictably according to viewport size. Above the thresholds of the <code>calc()</code>, I set the font size to fixed values. I use a base font size of <code>1em</code> below the viewport width threshold of <code>45em</code>, which I do not have to declare a rule for, as it is the browser default.</p>
+
+      <pre><code class="language-css">          
+@media screen and (min-width: 45em) {
   html {
-    box-sizing: border-box;
+    font-size: calc(1em + 0.25 * (100vw - 45em) / 35);
   }
+}
 
-  *, *:before, *:after {
-    box-sizing: inherit;
-  }
-
-  body {
-    font-family: 'Spectral', Georgia, serif;
-    font-variant: common-ligatures;
-    font-weight: 300;
-    line-height: 1.6;
-    margin: 0; padding: 0;
-  }
-
-  article {
-    display: grid;
-    grid-template-columns: repeat(9, calc(100vw / 9));
-  }
-
-  article > * {
-    grid-column: 2 / span 6;
-  }
-
-  article > header {
-    border-top: 1em solid #41E577;
-  }
-
-  @media screen and (min-width: 48em) and (orientation: landscape) {
-    article {
-      grid-template-columns: repeat(18, calc(100vw / 18));
-    }
-
-    article > * {
-      margin-top: calc(100vh / 9);
-      margin-bottom: calc((100vh / 9) * 2);
-      min-height: calc((100vh / 9) * 6);
-    }
-  }
-
-  @media screen and (min-width: 48em) and (orientation: landscape) {
-    article > header {
-      grid-column: 11 / span 6;
-    }
-
-    article > section:nth-of-type(odd) {
-      grid-column: 3 / span 6;
-    }
-
-    article > section:nth-of-type(even) {
-      grid-column: 11 / span 6;
-    }
-
-    article > section:first-of-type,
-    article > section:nth-of-type(2) {
-      grid-row: 2;
-    }
-
-    article > section:nth-of-type(3),
-    article > section:nth-of-type(4) {
-      grid-row: 3;
-    }
-
-    article > section:nth-of-type(5),
-    article > section:nth-of-type(6) {
-      grid-row: 4;
-    }
-  }
-
-  article > section :first-child {
-    margin-top: 0;
-  }
-
-  h1, h2, h3 {
-    line-height: 1.25;
-    margin: 1.5em 0 .5em;
-    font-weight: 200;
-  }
-
-  h1 {
-    font: 200 italic 2.441em/1.2 'Spectral', Georgia, serif;
-    margin: 1em 0;
-  }
-
-  @supports(text-decoration-skip: ink) {
-    h1 {
-      text-decoration: underline solid rebeccapurple;
-      text-decoration-skip: ink;
-    }
-  }
-
-  h1 abbr {
-    text-decoration: none;
-  }
-
-  h2 {
-    font-size: 1.562em;
-  }
-
-  h3 {
+@media screen and (min-width: 80em) {
+  html {
     font-size: 1.25em;
   }
+}
+      </code></pre>
 
-  p {
-    max-width: 72ch;
-    max-width: 35em;
-    margin: 1.5em 0;
-  }
+      <h3>Lost in translation</h3>
+      
+      <p>Now that the typography and a vertical rhythm have been set up using viewport units, we can start working on the Van der Graaf page layout. After remembering the <a href="http://retinart.net/graphic-design/secret-law-of-page-harmony/">article</a> this article started with, I wanted to see if I could implement the medieval page layout theories detailed there for the web using the <a href="http://www.w3.org/TR/2015/WD-css-grid-1-20150806/">CSS Grid</a> specification. Layouts very much like the Van der Graaf canon one have been in use by monks since the Middle Ages. They have been specifically constructed for layout on tangible media. For digital media, there are several difficulties to overcome.</p>
+      
+      <p>First, I think that when discussing page layouts the most important difference between physical media and the web is that the web is vertically endless. It's a ‘page’ that doesn't ever stop. Pages in books have well defined bounds and sizes you can use to define a layout as well as vertical rhythm. We already defined the vertical rhythm for our typography, but we are going to have to translate the vertically ‘capped’ print layout somehow. Second, we are, as is often the case, designing for unknown users with unknown devices in unknown contexts of use. This has to work well in any circumstance.</p>
 
-  pre {
-    max-width: 100%;
-    font-size: 0.8em;
-  }
+      <figure>
+        <img src="../images/tsichold-optimized.png" alt="The page layout structure of the Van de Graaf-canon visualised.">
+        <figcaption>Figure 1. This is how the Van de Graaf-canon is used in print. You are looking at two pages of a book, in landscape format. The spread's most important content is placed in the blue-stroked boxes and the margins can be used for headings, sidenotes or other <em>margin</em>ally relevant content (pun intended).</figcaption>
+      </figure>
 
-  p code {
-    font-size: 0.85em;
-    font-family: Menlo, Consolas, Monaco, monospace;
-  }
+      <h2>Building the grid</h2>
+      <p>I started out building a minimal, mobile-first grid. The original canon is based on the spread of a book. For application to digital design we have to account for the fact that devices can either have a portrait or landscape orientation. In Van de Graaf's page layout both pages of a spread have a 9&times;9 grid. Mobile devices are often held in portrait orientation, which closely resembles a single page. The right-handed page of the page layout will be our starting point. We'll account for landscape orientation later.</p>
 
-  a {
-    color: black;
-    text-decoration-skip: ink;
-    text-decoration-style: dotted;
-    transition: all 120ms linear;
-  }
+      <p>The grid will have 9 columns of equal-sized fractions of the width of the page. For the portrait layout, I'll only use the horizontal characteristics of the Van de Graaf canon.</p>
 
-  a:hover,
-  a:focus  {
-    color: #F00000;
-  }
-
-  img {
-    max-width: 80%;
-    height: auto;
-  }
-
-  figure {
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: center;
-    margin: 1.5em 0;
-  }
-
-  figure > img {
-    display: block;
-    border: 2px solid #ccc;
-  }
-
-  figcaption {
-    font-style: italic;
-    max-width: 80%;
-    margin: 1em 0 1.5em;
-  }
-  </style>
-</head>
-<body>
-    <article>
-      <header>
-        <h1>Recreating Van de Graaf's canon for the web with <abbr title="Cascading Style Sheets">CSS</abbr> Grid</h1>
-      </header>
-
-      <section>
-        <h2>Introduction</h2>
-        <p>I first stumbled on Van der Graaf's theory of page layout a couply of years ago, in an article called <a href="http://retinart.net/graphic-design/secret-law-of-page-harmony/">“The Secret Law of Page Harmony”</a>. Now, I'm not really a believer in the <a href="http://www.creativebloq.com/design/designers-guide-golden-ratio-12121546"><em>golden ratio theory</em></a> this “secret law” is based on. Some believers think things designed using the golden ratio are inherently, subconsciously beautiful to the human eye. Ugly is ugly. But I will concede the golden ratio is another tool for your arsenal, and I do use it sometimes, often for expressive type scales.</p>
-
-        <figure>
-          <img src="../images/tsichold-optimized.png" alt="The page layout structure of the Van de Graaf-canon visualised.">
-          <figcaption>Figure 1. This is how the Van de Graaf-canon is used in print. The page's most important content is placed in the blue-stroked boxes, the margins can be used for headings, sidenotes or other <em>margin</em>ally relevant content (pun intended).</figcaption>
-        </figure>
-      </section>
-
-      <section>
-        <h3>Difficulties</h3>
-        <p>After remembering the article, I wanted to see if I could implement the medieval page layout theories using the brand new <a href="http://www.w3.org/TR/2015/WD-css-grid-1-20150806/">CSS Grid</a>. There are several difficulties to overcome here. Layouts very much like the Van der Graaf canon one have been in use by monks since medieval times. First, I think that when discussing page layouts the most important difference between physical media and the web is that the web is vertically endless. It's a page that doesn't ever stop. Pages in books have well defined bounds you can use to define a vertical rhythm. We are going to have to deal with that somehow. Second, we are designing for unknown users with unknown devices in unknown contexts of use. This has to look great in any circumstance.</p>
-
-        <h2>Building the grid</h2>
-        <p>I started out building a minimal, mobile-first grid. The original canon is based on the spread of a book. For application to digital design we have to account for the fact that devices can either have a portrait or landscape orientation. In Van de Graaf's page layout both pages of a spread have a 9&times;9 grid. Mobile devices are often held in portrait orientation, which closely resembles a single page. The right-handed page of the page layout will be our starting point. We'll account for landscape orientation later.</p>
-      </section>
-
-      <section>
-        <p>The grid will have 9 columns of equal-sized fractions of the width of the page. For the portrait layout, I'll only use the horizontal characteristics of the Van de Graaf canon.</p>
-
-        <pre><code class="language-css">
+      <pre><code class="language-css">
   article {
     display: grid;
     grid-template-columns: repeat(9, calc(100vw / 9));
@@ -203,14 +133,16 @@
   }
         </code></pre>
 
-        <p>In the code snippet above, I assign every direct child of the <code>article</code> to start at the second column in the grid, and tell it to span 6 columns (out of 9), just like in the Van de Graaf canon. And as easy as that, we've got a grid that deals with the horizontal spacing of the article.</p>
-        <p>Now that this is in place, we've got the ‘single-page’ layout down. This works fine on rotated (landscape) phones or other devices. I want the spread to appear on larger screens.</p>
-      </section>
+      <p>In the code snippet above, I assign every direct child of the <code>article</code> to start at the second column in
+        the grid, and tell it to span 6 columns (out of 9), just like in the Van de Graaf canon. And as easy as that, we've
+        got a grid that deals with the horizontal spacing of the article.</p>
+      <p>Now that this is in place, we've got the ‘single-page’ layout down. This works fine on rotated (landscape) phones or
+        other devices. I want the spread to appear on larger screens.</p>
 
-      <section>
-        <p>On screens with a landscape orientation that are bigger than <code>48em</code>, I want to respect the vertical rhythm of the Van de Graaf canon.</p>
+      <p>On screens with a landscape orientation that are bigger than <code>48em</code>, I want to respect the vertical rhythm
+        of the Van de Graaf canon.</p>
 
-        <pre><code class="language-css">
+      <pre><code class="language-css">
 @media screen and (min-width: 48em) and (orientation: landscape) {
   article {
     grid-template-columns: repeat(18, calc(100vw / 18));
@@ -224,13 +156,11 @@
 }
         </code></pre>
 
-        <p>I solved this by cheating with simple margins instead of <a href="https://css-tricks.com/snippets/css/complete-guide-grid/">CSS Grid</a> rows to reduce complexity and not to cap the vertical height of my content to predefined CSS Grid rows.</p>
-      </section>
+      <p>I solved this by cheating with simple margins instead of <a href="https://css-tricks.com/snippets/css/complete-guide-grid/">CSS Grid</a>        rows to reduce complexity and not to cap the vertical height of my content to predefined CSS Grid rows.</p>
 
-      <section>
-        <p>Having the vertical rhythm down, I have to tell each and every element in the article where it belongs.</p>
+      <p>Having the vertical rhythm down, I have to tell each and every element in the article where it belongs.</p>
 
-        <pre><code class="language-css">
+      <pre><code class="language-css">
   @media screen and (min-width: 48em) and (orientation: landscape) {
     article > header {
       grid-column: 11 / span 6;
@@ -260,17 +190,24 @@
     }
   }
         </code></pre>
-      </section>
 
-      <section>
-        <p>That's it, a finished implementation of the Van der Graaf-canon for CSS Grid. You can clearly see how this wouldn't scale to any sort of production environment. The vertical page layout of the Van der Graaf-canon that works so well on tangible media, is also what makes it very hard and hacky to work with on digital media. In having to create predefined grid areas, I also had to cut up the article content by hand, picking arbitrary points to break into a next grid area. This causes the layout to look awkwardly empty on some breakpoints.</p>
+      <p>That's it, a finished implementation of the Van der Graaf-canon for CSS Grid. You can clearly see how this wouldn't
+        scale to any sort of production environment. The vertical page layout of the Van der Graaf-canon that works so well
+        on tangible media, is also what makes it very hard and hacky to work with on digital media. In having to create predefined
+        grid areas, I also had to cut up the article content by hand, picking arbitrary points to break into a next grid
+        area. This causes the layout to look awkwardly empty on some breakpoints.</p>
 
-        <h2>Conclusion</h2>
-        <p>The CSS Grid specification isn't quite made for editorial text layout like this, yet. You'd like an article to be able to flow through pre-defined grid areas. Unfortunately, now you have to cut it up into areas by hand.  In doing so, you will notice your areas look weird on some aspect ratios, due to overflowing. I guess what I wanted is still out of reach, for now. Unless I write some very horrible JavaScript, or do hours and hours of art direction on exactly fitting images and text length for sections of the page. <a href="https://drafts.csswg.org/css-regions-1/">CSS Regions</a> could be the answer to my troubles, but it will not be implemented for some time yet. As of yet, only Safari has <a href="http://caniuse.com/#search=css%20regi">full support</a>. <abbr title="Internet Explorer 11">IE11</abbr> and Edge support it partially, other browsers not at all, not even behind a flag.</p>
-        <p>Footnote: this article was laid out with the described technique.</p>
-      </section>
-    </article>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/prism.min.js" integrity="sha256-Zb9yKJ/cfs+jG/zIOFL0QEuXr2CDKF7FR5YBJY3No+c=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/components/prism-css.min.js" integrity="sha256-9IbC+5POyRUrKjUK74vvfhDo2KEjASNTA6OAt1gwKvs=" crossorigin="anonymous"></script>
+      <h2>Lessons learned</h2>
+      <p>The CSS Grid specification by itself isn't enough for editorial text layout with constrained vertical containers. You'd like an article to be able to flow through multiple pre-defined grid areas. Unfortunately, now you have to cut it up into separate areas by hand. In doing so, you will notice your areas look weird on some aspect ratios, due to overflowing. What I wanted to achieve is still out of reach, for now, unless I write some potentially horrible JavaScript, or do hours and hours of art direction on exactly fitting images and text length for sections of the page.<p> 
+
+      <h3>Other possible solutions</h3>
+      <p><a href="https://drafts.csswg.org/css-regions-1/">CSS Regions</a> could be the answer to my troubles, but it will not be implemented for some time yet. As of yet, only Safari has <a href="http://caniuse.com/#search=css%20regi">full support</a>. <abbr title="Internet Explorer 11">IE11</abbr> and Edge support it partially, other browsers not at all, not even behind a flag. The layout might be achievable using CSS Columns, although after a quick look, I couldn't figure out how to break the columns at a height of <code>100vh</code>. Scaling the layout down to one ‘page’, using only the left- or righthand side of the grid, solves all of our problems, although it beats the point of the exercise and will make for a quite ordinary layout.</p>
+    </main>
+  </article>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/prism.min.js" integrity="sha256-Zb9yKJ/cfs+jG/zIOFL0QEuXr2CDKF7FR5YBJY3No+c="
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/components/prism-css.min.js" integrity="sha256-9IbC+5POyRUrKjUK74vvfhDo2KEjASNTA6OAt1gwKvs="
+    crossorigin="anonymous"></script>
 </body>
+
 </html>
