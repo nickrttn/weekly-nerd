@@ -24,7 +24,7 @@ body {
   font-family: "Spectral", Georgia, serif;
   font-variant: common-ligatures;
   font-weight: 300;
-  line-height: 1.6;
+  line-height: 1.618;
   margin: 0;
   padding: 0;
 }
@@ -32,9 +32,15 @@ body {
 h1,
 h2,
 h3,
+h4 {
+  line-height: 1.2;
+}
+
+h1,
+h2,
+h3,
 h4,
 p {
-  max-width: 72ch;
   margin: 1.5em 0 0.75em;
 }
 
@@ -55,17 +61,20 @@ p {
   font-size: 1em;
 }
 
+pre {
+  font-size: 0.8em;
+}
 
-/* article {
+article {
   display: grid;
-  grid-template-columns: repeat(9, calc(100vw / 9));
+  grid-template-columns: repeat(9, 1fr);
 }
 
 article > * {
   grid-column: 2 / span 6;
 }
 
-article > header {
+/*article > header {
   border-top: 1em solid #41e577;
 }
 
@@ -150,11 +159,6 @@ p {
   max-width: 72ch;
   max-width: 35em;
   margin: 1.5em 0;
-}
-
-pre {
-  max-width: 100%;
-  font-size: 0.8em;
 }
 
 p code {
