@@ -80,7 +80,7 @@ p {
 }
 
 pre[class*="language-"] {
-  margin: 1.618em 0;
+  margin: 0 0 1.618em;
   max-width: 100%;
 }
 
@@ -135,7 +135,7 @@ article > * {
     grid-template-columns: repeat(14, calc(100vw / 18));
     grid-auto-rows: calc((100vh / 9) * 6);
     grid-row-gap: calc((100vh / 9) * 3);
-    align-items: baseline;
+    align-items: first baseline;
   }
 
   article section > * {

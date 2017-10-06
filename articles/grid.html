@@ -147,28 +147,26 @@ html {
       <p>I started out building a minimal, mobile-first grid. The original canon is based on the spread of a book. For application to digital design we have to account for the fact that devices can either have a portrait or landscape orientation.</p>
       <p>In Van de Graaf's page layout both pages of a spread have a 9&times;9 grid. Mobile devices are often held in portrait orientation, which closely resembles a single page. The right-handed page of the page layout will be our starting point. We'll account for landscape orientation later.</p>
       <p>The grid will have 9 columns of equal-sized fractions of the width of the page. For the portrait layout, I'll only use the horizontal characteristics of the Van de Graaf canon.</p>
-    </div>
+    
 
+    <pre><code class="language-css">
+      article {
+        display: grid;
+        grid-template-columns: repeat(9, calc(100vw / 9));
+      }
+      
+      article > * {
+        grid-column: 2 / span 6;
+      }
+    </code></pre>
+  </div>
+    
     <div>
-      <pre><code class="language-css">
-  article {
-    display: grid;
-    grid-template-columns: repeat(9, calc(100vw / 9));
-  }
-  
-  article > * {
-    grid-column: 2 / span 6;
-  }
-        </code></pre>
-
         <p>In the code snippet above, I assign every direct child of the <code>article</code> to start at the second column in the grid, and tell it to span 6 columns (out of 9), just like in the Van de Graaf canon. And as easy as that, we've got a grid that deals with the horizontal spacing of the article.</p>
         <p>Now that this is in place, we've got the ‘single-page’ layout down. This works fine on rotated (landscape) phones or other devices. I want the spread to appear on larger screens.</p>
-    </div>
+        <p>On screens with a landscape orientation that are bigger than <code>48em</code>, I want to respect the vertical rhythm of the Van de Graaf canon.</p>
 
-    <div>
-      <p>On screens with a landscape orientation that are bigger than <code>48em</code>, I want to respect the vertical rhythm of the Van de Graaf canon.</p>
-
-      <pre><code class="language-css">
+        <pre><code class="language-css">
 @media screen and (min-width: 48em) and (orientation: landscape) {
   article {
     grid-template-columns: repeat(18, calc(100vw / 18));
@@ -181,6 +179,10 @@ html {
   }
 }
         </code></pre>
+
+      </div>
+      
+          <div>
 
       <p>I solved this by cheating with simple margins instead of <a href="https://css-tricks.com/snippets/css/complete-guide-grid/">CSS Grid</a> rows to reduce complexity and not to cap the vertical height of my content to predefined CSS Grid rows.</p>
 
